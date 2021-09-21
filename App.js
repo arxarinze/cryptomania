@@ -37,7 +37,26 @@ const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [currency, setCurrency] = useState([]);
   const uploadCSV = async () => {
-    
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.csv],
+      })
+      Papa.parse(res[0]?.uri, {
+        download: true,
+        delimiter: ',',
+        complete: function (results) {
+          let columns = results.data.shift();
+          let rows = results.data;
+          setCurrency(rows[0]);
+        }
+      });
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err
+      }
+    }
   }
 
   const backgroundStyle = {
