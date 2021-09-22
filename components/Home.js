@@ -136,7 +136,7 @@ const Home = ({ curr }) => {
             });
             temp['other_price'] = othertemp;
             temp['market_price'] = marketPrice[temp['coin/token']][curr['purchasing_currency']];
-            let pl = ((parseFloat(temp['market_price']) - parseFloat(temp['total cost'])) / parseFloat(temp['total cost'])) * 100;
+            let pl = (((parseFloat(temp['market_price']) * parseFloat(temp['unit'])) - parseFloat(temp['total cost'])) / parseFloat(temp['total cost'])) * 100;
             temp['profit/loss'] = pl;
 
             setShowLoader(false);
