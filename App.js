@@ -9,45 +9,41 @@
 import React, { useState } from 'react';
 import type { Node } from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
-  useColorScheme,
+  Button,
+  SafeAreaView,
+  Text,
+  View
 } from 'react-native';
 
 import Papa from 'papaparse';
 import DocumentPicker from 'react-native-document-picker';
-import { View, FloatingButton } from 'react-native-ui-lib';
 import {
   Colors,
   Header,
 } from 'react-native/Libraries/NewAppScreen';
+import Home from './Home';
 
-const CryptoWidget = ({ children }): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
 
-    </View>
-  );
-};
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+const App: () => Node = (navigation) => {
   const [currency, setCurrency] = useState([]);
+  const [showHome, setShowHome] = useState(false);
   const uploadCSV = async () => {
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.csv],
       })
+
+
       Papa.parse(res[0]?.uri, {
         download: true,
         header: true,
         delimiter: ',',
         complete: function (results) {
-          console.log(results);
-          //setCurrency(rows[0]);
+          setCurrency(results.data[0]);
+          setShowHome(true);
         }
       });
     } catch (err) {
@@ -59,46 +55,26 @@ const App: () => Node = () => {
     }
   }
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  const ButtonSpace = 20;
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <FloatingButton
-          button={{
-            label: 'Upload',
-            onPress: {uploadCSV}
-          }}
-          // bottomMargin={80}
-          hideBackgroundOverlay
-          // withoutAnimation
-        />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            flex: 1
-          }}>
-          {/* {currency.map((file) => (
-            <CryptoWidget key={file}>
-            {file}
-          </CryptoWidget>
-          ))} */}
-
+    <SafeAreaView style={styles.container}>
+      {
+        !showHome && <View>
+          <Button
+            title="Upload Currencies"
+            onPress={uploadCSV}
+          />
         </View>
-      </ScrollView>
+      }
+      {showHome && <Home curr={currency}></Home>}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center'
+  },
   sectionContainer: {
     marginTop: 32,
     marginBottom: 32,
