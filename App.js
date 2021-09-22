@@ -7,30 +7,29 @@
  */
 
 import React, { useState } from 'react';
-import type { Node } from 'react';
 import {
-  StatusBar,
   StyleSheet,
   Button,
   SafeAreaView,
-  Text,
-  View
+  ActivityIndicator,
+  View,
 } from 'react-native';
 
 import Papa from 'papaparse';
 import DocumentPicker from 'react-native-document-picker';
-import {
-  Colors,
-  Header,
-} from 'react-native/Libraries/NewAppScreen';
-import Home from './Home';
+
+import Home from './components/Home';
+import FadeInView from './components/FadeInView';
 
 
 
-const App: () => Node = (navigation) => {
+const App = () => {
   const [currency, setCurrency] = useState([]);
   const [showHome, setShowHome] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+
   const uploadCSV = async () => {
+    setShowLoader(true);
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.csv],
@@ -43,12 +42,13 @@ const App: () => Node = (navigation) => {
         delimiter: ',',
         complete: function (results) {
           setCurrency(results.data[0]);
+          setShowLoader(false);
           setShowHome(true);
         }
       });
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
-        // User cancelled the picker, exit any dialogs or menus and move on
+
       } else {
         throw err
       }
@@ -58,14 +58,25 @@ const App: () => Node = (navigation) => {
   return (
     <SafeAreaView style={styles.container}>
       {
-        !showHome && <View>
+        showLoader &&
+        <ActivityIndicator size="large" />
+      }
+      {
+        !showHome && 
+        <FadeInView >
+          <View>
           <Button
             title="Upload Currencies"
             onPress={uploadCSV}
           />
         </View>
+        </FadeInView>
+        
       }
-      {showHome && <Home curr={currency}></Home>}
+      {showHome && 
+        <FadeInView >
+          <Home curr={currency}></Home>
+      </FadeInView>}
     </SafeAreaView>
   );
 };
