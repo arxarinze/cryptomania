@@ -113,7 +113,6 @@ const Home = ({ curr }) => {
 
     useEffect(async () => {
         await refreshPage(purchases);
-        setRefreshing(false);
     });
 
     const refreshPage = async (dat) => {
@@ -142,6 +141,7 @@ const Home = ({ curr }) => {
 
             setShowLoader(false);
         });
+        setPurchases(data);
     }
 
     const uploadCSV = async (type) => {
@@ -164,7 +164,7 @@ const Home = ({ curr }) => {
                     }
                 });
             
-            forceUpdate();
+            
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 // User cancelled the picker, exit any dialogs or menus and move on
